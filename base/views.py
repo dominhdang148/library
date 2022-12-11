@@ -1,24 +1,28 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
-
-documents = [
-    {'id': 1, 'name': 'Doraemon'},
-    {'id': 2, 'name': 'Python Cookbook'},
-    {'id': 3, 'name': 'Sherlock Holmes'},
-    {'id': 4, 'name': 'Sudoku quiz'},
-]
+from django.contrib.auth.models import User
+from .models import Topic, Comment, Document
+from .forms import DocumentForm
 
 
 def home(request):
-
+    documents = Document.objects.all()
     context = {'documents': documents}
     return render(request, 'base/home.html', context)
 
 
 def document(request, pk):
-    doc = None
-    for i in documents:
-        if i['id'] == int(pk):
-            doc = i
+    doc = Document.objects.get(id=pk)
     context = {'document': doc}
     return render(request, 'base/document.html', context)
+
+
+def createDocument(request):
+    form = DocumentForm()
+    if request.method == 'POST':
+        form = DocumentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    context = {'form': form}
+    return render(request, 'base/document_form.html', context)
