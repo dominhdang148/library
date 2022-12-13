@@ -1,20 +1,29 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Home Template</h1>
-<div>
 
-    <a href="{% url 'create-document' %}">Create document</a>
+<style>
+    .home-container {
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+    }
+</style>
 
+<div class='home-container'>
     <div>
-        {% for document in documents %}
+        {% include 'base/topic_component.html' %}
+
+    </div>
+    <div>
+        <h5>{{documents.count}} documents available</h5>
+        <a href="{% url 'create-document' %}">Create document</a>
+
         <div>
-            <span>@{{document.author.username}}</span>
-            <h5>{{document.id}} -- <a href="{% url 'document' document.id %}">{{document.name}}</h5></a>
-            <small>{{document.topic.name}}</small>
-            <hr>
+            {% include 'base/feed_component.html' %}
         </div>
-        {% endfor %}
+    </div>
+    <div>
+        {% include 'base/activity_component.html' %}
     </div>
 </div>
 {% endblock content %}

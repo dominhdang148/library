@@ -1,0 +1,13 @@
+{% for document in documents %}
+<div>
+    {% if request.user == document.author %}
+    <a href="{% url 'update-document' document.id %}">Edit</a>
+    <a href="{% url 'delete-document' document.id %}">Delete</a>
+    {% endif %}
+
+    <a href='{% url 'profile' document.author.id%}'>@{{document.author.username}}</a>
+    <h5><a href="{% url 'document' document.id %}">{{document.name}}</h5></a>
+    <small>{{document.topic.name}}</small>
+    <hr>
+</div>
+{% endfor %}
