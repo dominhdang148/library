@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
 from django.contrib import messages
+from .functions import handle_uploaded_file
+import os
 
 
 def loginPage(request):
@@ -95,9 +97,10 @@ def userProfile(request, pk):
 def createDocument(request):
     form = DocumentForm()
     if request.method == 'POST':
-        form = DocumentForm(request.POST)
+        form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             document = form.save(commit=False)
+            handle_uploaded_file(request.FILES['content'])
             document.author = request.user
             document.save()
             return redirect('home')
@@ -108,14 +111,18 @@ def createDocument(request):
 @login_required(login_url='login')
 def updateDocument(request, pk):
     document = Document.objects.get(id=pk)
+    olddoc = document.content
     form = DocumentForm(instance=document)
 
     if request.user != document.author:
         return HttpResponse('You are not allowed here!!')
 
     if request.method == 'POST':
-        form = DocumentForm(request.POST, instance=document)
+        form = DocumentForm(request.POST, request.FILES, instance=document)
+        print(olddoc)
         if form.is_valid():
+           
+            handle_uploaded_file(request.FILES['content'])
             form.save()
             return redirect('home')
     context = {'form': form}
@@ -125,9 +132,11 @@ def updateDocument(request, pk):
 @login_required(login_url='login')
 def deleteDocument(request, pk):
     document = Document.objects.get(id=pk)
+    print(document.content)
     if request.user != document.author:
         return HttpResponse('You are not allowed here!!')
     if request.method == 'POST':
+        os.remove(f'base/static/upload/{document.content}')
         document.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj': document})
