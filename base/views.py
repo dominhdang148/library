@@ -142,6 +142,8 @@ def deleteDocument(request, pk):
     return render(request, 'base/delete.html', {'obj': document})
 
 
+
+
 @login_required(login_url='login')
 def deleteComment(request, pk):
     document = request
