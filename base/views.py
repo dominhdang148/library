@@ -146,8 +146,7 @@ def deleteDocument(request, pk):
     print(document.content)
     if request.user != document.author:
         return HttpResponse('You are not allowed here!!')
-    if request.method == 'POST':
-        # os.remove(f'base/static/upload/{document.content}')
+    if request.method == 'POST': # os.remove(f'base/static/upload/{document.content}')
         document.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj': document})
